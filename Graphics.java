@@ -9,13 +9,18 @@ public class Graphics extends JPanel implements Runnable {
 	private Thread t;
 	private JFrame frame = new JFrame("March Madness Bracket");
 	private boolean run = true;
-	private int dim = 1400;
-	private ArrayList<Team> teams;
+	private int dim = 800;
+	private int q1x = 25, q1y = (int)(dim*.8)/7, q2x = (int)(dim*1.2) - 25, q2y = (int)(dim*.8)/7;
+	private int q3x = 25, q3y = (int)(dim*.4) + (int)(dim*.8)/42, q4x = (int)(dim*1.2) - 25, q4y = (int)(dim*.4) + (int)(dim*.8)/42;
+	private ArrayList<Team> teams = new ArrayList<Team>();
+	private int team = 0;
 	
 	public Graphics() {
+		for(int i = 0; i < 64; i++) 
+			teams.add(new Team(i));
 		//Create JFrame
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(dim, (int)(dim*.8));
+		frame.setSize((int)(dim*1.2) + 15, (int)(dim*.8) + 35);
 		frame.setVisible(true);
 		frame.add(this);
 		frame.repaint();
@@ -25,8 +30,7 @@ public class Graphics extends JPanel implements Runnable {
 
 	@Override
 	public void run() {
-		while(run)
-			frame.repaint();
+		
 	}
 	
 	public void setTeams(ArrayList<Team> t) {
@@ -35,78 +39,92 @@ public class Graphics extends JPanel implements Runnable {
 	}
 	
 	public String getTeam(int x) {
-		return "   blah " + x;
+		return " " + teams.get(x);
+	}
+	
+	public String getOpponent(int x) {
+		return "  " + teams.get(x).getOpponent();
 	}
 	
 	public void paintComponent(java.awt.Graphics g) {
 		//Background and Heading
 		super.paintComponent(g);
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, dim, (int)(dim*.8));
+		g.fillRect(0, 0, (int)(dim*1.2), (int)(dim*.8));
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Times New Roman", Font.PLAIN, 50));
-		String txt = "Division I Men's Bracket";
-		g.drawString(txt, dim/2 - 250, dim/10);
+		String txt = "March Madness Bracket";
+		g.drawString(txt, (int)(dim*.6) - 250, dim/10);
 		//Bracket
 		int y = (int)(dim*.8)/42;
-		int x = dim/12;
-		for(int i = 0; i < 16; i++) {
-			g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-			g.setColor(Color.WHITE);
-			int margin = 25;
-			g.drawLine(0 + margin, y*(i + 6), x + margin, y*(i + 6));
-			g.drawString(getTeam(i), 0 + margin, y*(i + 6));
-			g.drawLine(dim - 2*margin, y*(i + 6), dim - x - 2*margin, y*(i + 6));
-			g.drawString(getTeam(i + 16), dim - x - 2*margin, y*(i + 6));
-			g.drawLine(0 + margin, (int)(dim*.8) - (int)(y)*(i + 6), x + margin, (int)(dim*.8) - (int)(y)*(i + 6));
-			g.drawString(getTeam(i + 32), 0 + margin, (int)(dim*.8) - (int)(y)*(i + 6));
-			g.drawLine(dim - 2*margin, (int)(dim*.8) - (int)(y)*(i + 6), dim - x - 2*margin, (int)(dim*.8) - (int)(y)*(i + 6));
-			g.drawString(getTeam(i + 48), dim - x - 2*margin, (int)(dim*.8) - (int)(y)*(i + 6));
-			if(i%2 == 1) {
-				g.drawLine(x + margin, y*(i + 5), x + margin, y*(i + 6));
-				g.drawLine(x + margin, (int)(y*(i + 5.5)), 2*x + margin, (int)(y*(i + 5.5)));
-				g.drawLine(dim - x - 2*margin, y*(i + 5), dim - x - 2*margin, y*(i + 6));
-				g.drawLine(dim - x - 2*margin, (int)(y*(i + 5.5)), dim - 2*x - 2*margin, (int)(y*(i + 5.5)));
-				g.drawLine(x + margin, (int)(dim*.8) - (int)(y)*(i + 5), x + margin, (int)(dim*.8) - (int)(y)*(i + 6));
-				g.drawLine(x + margin, (int)(dim*.8) - (int)(y*(i + 5.5)), 2*x + margin, (int)(dim*.8) - (int)(y*(i + 5.5)));
-				g.drawLine(dim - x - 2*margin, (int)(dim*.8) - (int)(y)*(i + 5), dim - x - 2*margin, (int)(dim*.8) - (int)(y)*(i + 6));
-				g.drawLine(dim - x - 2*margin, (int)(dim*.8) - (int)(y*(i + 5.5)), dim - 2*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 5.5)));
-			}
-			if(i%4 == 1) {
-				g.drawLine(2*x + margin, (int)(y*(i + 5.5)), 2*x + margin, (int)(y*(i + 7.5)));
-				g.drawLine(2*x + margin, (int)(y*(i + 6.5)), 3*x + margin, (int)(y*(i + 6.5)));
-				g.drawLine(dim - 2*x - 2*margin, (int)(y*(i + 5.5)), dim - 2*x - 2*margin, (int)(y*(i + 7.5)));
-				g.drawLine(dim - 2*x - 2*margin, (int)(y*(i + 6.5)), dim - 3*x - 2*margin, (int)(y*(i + 6.5)));
-				g.drawLine(2*x + margin, (int)(dim*.8) - (int)(y*(i + 5.5)), 2*x + margin, (int)(dim*.8) - (int)(y*(i + 7.5)));
-				g.drawLine(2*x + margin, (int)(dim*.8) - (int)(y*(i + 6.5)), 3*x + margin, (int)(dim*.8) - (int)(y*(i + 6.5)));
-				g.drawLine(dim - 2*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 5.5)), dim - 2*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 7.5)));
-				g.drawLine(dim - 2*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 6.5)), dim - 3*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 6.5)));
-			}
-			if(i%8 == 1) {
-				g.drawLine(3*x + margin, (int)(y*(i + 6.5)), 3*x + margin, (int)(y*(i + 10.5)));
-				g.drawLine(3*x + margin,  (int)(y*(i + 8.5)), 4*x + margin, (int)(y*(i + 8.5)));
-				g.drawLine(dim - 3*x - 2*margin, (int)(y*(i + 6.5)), dim - 3*x - 2*margin, (int)(y*(i + 10.5)));
-				g.drawLine(dim - 3*x - 2*margin, (int)(y*(i + 8.5)), dim - 4*x - 2*margin, (int)(y*(i + 8.5)));
-				g.drawLine(3*x + margin, (int)(dim*.8) - (int)(y*(i + 6.5)), 3*x + margin, (int)(dim*.8) - (int)(y*(i + 10.5)));
-				g.drawLine(3*x + margin, (int)(dim*.8) - (int)(y*(i + 8.5)), 4*x + margin, (int)(dim*.8) - (int)(y*(i + 8.5)));
-				g.drawLine(dim - 3*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 6.5)), dim - 3*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 10.5)));
-				g.drawLine(dim - 3*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 8.5)), dim - 4*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 8.5)));
-			}
-			if(i%16 == 1) {
-				g.drawLine(4*x + margin, (int)(y*(i + 8.5)), 4*x + margin, (int)(y*(i + 16.5)));
-				g.drawLine(4*x + margin,  (int)(y*(i + 12.5)), 5*x + margin, (int)(y*(i + 12.5)));
-				g.drawLine(dim - 4*x - 2*margin, (int)(y*(i + 8.5)), dim - 4*x - 2*margin, (int)(y*(i + 16.5)));
-				g.drawLine(dim - 4*x - 2*margin, (int)(y*(i + 12.5)), dim - 5*x - 2*margin, (int)(y*(i + 12.5)));
-				g.drawLine(4*x + margin, (int)(dim*.8) - (int)(y*(i + 8.5)), 4*x + margin, (int)(dim*.8) - (int)(y*(i + 16.5)));
-				g.drawLine(4*x + margin, (int)(dim*.8) - (int)(y*(i + 12.5)), 5*x + margin, (int)(dim*.8) - (int)(y*(i + 12.5)));
-				g.drawLine(dim - 4*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 8.5)), dim - 4*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 16.5)));
-				g.drawLine(dim - 4*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 12.5)), dim - 5*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 12.5)));
-				g.drawLine(5*x + margin, (int)(y*(i + 12.5)), 5*x + margin, (int)(y*(i + 28.5)));
-				g.drawLine(dim - 5*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 12.5)), dim - 5*x - 2*margin, (int)(dim*.8) - (int)(y*(i + 28.5)));
-				g.drawLine(5*x + margin, (int)(y*(i + 15.5)), (int)(6.3*x) + margin, (int)(y*(i + 15.5)));
-				g.drawLine(dim - 5*x - 2*margin, (int)(y*(i + 25.5)), dim - (int)(6.3*x) - 2*margin, (int)(y*(i + 25.5)));
-				g.drawLine((int)(6.3*x) + margin, (int)(y*(i + 20.5)), dim - (int)(6.3*x) - 2*margin, (int)(y*(i + 20.5)));
-			}
+		int x = (int)(dim*.1);
+		g.setFont(new Font("Times New Roman", Font.PLAIN, dim/50));
+		//Round 1
+		for(int i = 0; i < 64; i+=2) {
+			team = i;
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
+		for(int i = 0; i < 16; i+=2) {
+			team = i;
+			bracket(g, 0, x, y*i, y*(i + 1));
+		}
+		//Round 2
+		for(int i = 0; i < 16; i+=4) {
+			bracket(g, x, 2*x, (int)(y*(i + 0.5)), (int)(y*(i + 2.5)));
+		}
+		//Round 3
+		for(int i = 0; i < 16; i+=8) {
+			team = i;
+			bracket(g, 2*x, 3*x, (int)(y*(i + 1.5)), (int)(y*(i + 5.5)));
+		}
+		//Quarterfinals
+		bracket(g, 3*x, 4*x, (int)(y*(3.5)), (int)(y*(11.5))); 
+		//Semifinals and Finals
+		finalBracket(g, 4*x, 5*x, (int)(6.3*x), (int)(y*(7.5)), (int)(y*(23.5)));
+	}
+	
+	public void bracket(java.awt.Graphics g, int x1, int x2, int y1, int y2) {
+		g.setColor(Color.WHITE);
+		g.drawLine(q1x + x1, q1y + y1, q1x + x2, q1y + y1);
+		g.drawLine(q1x + x1, q1y + y2, q1x + x2, q1y + y2);
+		g.drawLine(q1x + x2, q1y + y1, q1x + x2, q1y + y2);
+		g.drawLine(q2x - x1, q2y + y1, q2x - x2, q2y + y1);
+		g.drawLine(q2x - x1, q2y + y2, q2x - x2, q2y + y2);
+		g.drawLine(q2x - x2, q2y + y1, q2x - x2, q2y + y2);
+		g.drawLine(q3x + x1, q3y + y1, q3x + x2, q3y + y1);
+		g.drawLine(q3x + x1, q3y + y2, q3x + x2, q3y + y2);
+		g.drawLine(q3x + x2, q3y + y1, q3x + x2, q3y + y2);
+		g.drawLine(q4x - x1, q4y + y1, q4x - x2, q4y + y1);
+		g.drawLine(q4x - x1, q4y + y2, q4x - x2, q4y + y2);
+		g.drawLine(q4x - x2, q4y + y1, q4x - x2, q4y + y2);repaint();
+		g.drawString(getTeam(team), q1x + x1, q1y + y1);
+		g.drawString(getTeam(team + 16), q3x + x1, q3y + y1);
+		g.drawString(getTeam(team + 32), q2x - x2, q2y + y1);
+		g.drawString(getTeam(team + 48), q4x - x2, q4y + y1);
+		g.setColor(Color.GREEN);
+		g.drawString(getOpponent(team), q1x + x1, q1y + y2);
+		g.drawString(getOpponent(team + 16), q3x + x1, q3y + y2);
+		g.drawString(getOpponent(team + 32), q2x - x2, q2y + y2);
+		g.drawString(getOpponent(team + 48), q4x - x2, q4y + y2);
+	}
+	
+	public void finalBracket(java.awt.Graphics g, int x1, int x2, int x3, int y1, int y2) {
+		g.setColor(Color.WHITE);
+		g.drawLine(q1x + x1, q1y + y1, q1x + x2, q1y + y1);
+		g.drawLine(q1x + x1, q1y + y2, q1x + x2, q1y + y2);
+		g.drawLine(q1x + x2, q1y + y1, q1x + x2, q1y + y2);
+		g.drawString(getTeam(team), q1x + x1, q1y + y1);
+		g.drawString(getTeam(team + 1), q1x + x1, q1y + y2);
+		g.drawLine(q2x - x1, q2y + y1, q2x - x2, q2y + y1);
+		g.drawLine(q2x - x1, q2y + y2, q2x - x2, q2y + y2);
+		g.drawLine(q2x - x2, q2y + y1, q2x - x2, q2y + y2);
+		g.drawString(getTeam(team), q1x + x1, q1y + y1);
+		g.drawString(getTeam(team + 1), q1x + x1, q1y + y2);
+		g.drawLine(q1x + x2, q1y + (int)(y1*1.3), q1x + x3, q1y + (int)(y1*1.3));
+		g.drawLine(q2x - x2, q2y + y2 - (int)(y1*.3), q2x - x3, q2y + y2 - (int)(y1*.3));
+		g.drawLine(q2x - x3, (int)(dim*.4), q1x + x3, (int)(dim*.4));
+		g.drawString(getTeam(team), q1x + x2, q1y + (int)(y1*1.3));
+		g.drawString(getTeam(team + 1), q2x - x3, q2y + y2 - (int)(y1*.3));
 	}
 }
