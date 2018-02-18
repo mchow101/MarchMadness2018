@@ -5,15 +5,21 @@ public class Game {
 	public Game(Team a, Team b) {
 		this.a = a;
 		this.b = b;
+		game();
 	}
 	
 	public void game() {
-		if(a.getNum() < b.getNum()) {
+		double p = Math.random();
+		if(p < 0.5) {
 			winner = a;
+			a.setWinner(true);
 			loser = b;
+			b.setWinner(false);
 		} else {
 			winner = b;
+			b.setWinner(true);
 			loser = a;
+			a.setWinner(false);
 		}
 	}
 	

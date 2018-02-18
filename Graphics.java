@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.*;
 
@@ -13,6 +14,7 @@ public class Graphics extends JPanel implements Runnable {
 	private int q1x = 25, q1y = (int)(dim*.8)/7, q2x = (int)(dim*1.2) - 25, q2y = (int)(dim*.8)/7;
 	private int q3x = 25, q3y = (int)(dim*.4) + (int)(dim*.8)/42, q4x = (int)(dim*1.2) - 25, q4y = (int)(dim*.4) + (int)(dim*.8)/42;
 	private ArrayList<Team> teams = new ArrayList<Team>();
+	private ArrayList<Integer> toRemove = new ArrayList<Integer>();
 	private int team = 0;
 	
 	public Graphics() {
@@ -60,32 +62,51 @@ public class Graphics extends JPanel implements Runnable {
 		int x = (int)(dim*.1);
 		g.setFont(new Font("Times New Roman", Font.PLAIN, dim/50));
 		//Round 1
-		for(int i = 0; i < 64; i+=2) {
+		updateList();
+		for(int i = 0; i < 64; i+=2) 
 			team = i;
-			teams.get(i).setOpponent(teams.get(i + 1));
-			teams.get(i + 1).setOpponent(teams.get(i));
-		}
 		for(int i = 0; i < 16; i+=2) {
 			team = i;
+			updateList(team);
+			updateList(team + 16);
+			updateList(team + 32);
+			updateList(team + 48);
 			bracket(g, 0, x, y*i, y*(i + 1));
 		}
+		updateList();
 		//Round 2
 		for(int i = 0; i < 16; i+=4) {
+			team = i/2;
+			updateList(team);
+			updateList(team + 8);
+			updateList(team + 16);
+			updateList(team + 24);
 			bracket(g, x, 2*x, (int)(y*(i + 0.5)), (int)(y*(i + 2.5)));
 		}
+		updateList();
 		//Round 3
 		for(int i = 0; i < 16; i+=8) {
-			team = i;
+			team = i/4;
+			updateList(team);
+			updateList(team + 4);
+			updateList(team + 8);
+			updateList(team + 12);
 			bracket(g, 2*x, 3*x, (int)(y*(i + 1.5)), (int)(y*(i + 5.5)));
 		}
-		//Quarterfinals
-		bracket(g, 3*x, 4*x, (int)(y*(3.5)), (int)(y*(11.5))); 
+		updateList();
+		//Quarterfinals 
+		team = 0;
+		updateList(0);
+		updateList(2);
+		bracket(g, 3*x, 4*x, (int)(y*(3.5)), (int)(y*(11.5)));
+		updateList();
 		//Semifinals and Finals
 		finalBracket(g, 4*x, 5*x, (int)(6.3*x), (int)(y*(7.5)), (int)(y*(23.5)));
 	}
 	
 	public void bracket(java.awt.Graphics g, int x1, int x2, int y1, int y2) {
 		g.setColor(Color.WHITE);
+		int p = teams.size()/4;
 		g.drawLine(q1x + x1, q1y + y1, q1x + x2, q1y + y1);
 		g.drawLine(q1x + x1, q1y + y2, q1x + x2, q1y + y2);
 		g.drawLine(q1x + x2, q1y + y1, q1x + x2, q1y + y2);
@@ -97,16 +118,15 @@ public class Graphics extends JPanel implements Runnable {
 		g.drawLine(q3x + x2, q3y + y1, q3x + x2, q3y + y2);
 		g.drawLine(q4x - x1, q4y + y1, q4x - x2, q4y + y1);
 		g.drawLine(q4x - x1, q4y + y2, q4x - x2, q4y + y2);
-		g.drawLine(q4x - x2, q4y + y1, q4x - x2, q4y + y2);repaint();
-		g.drawString(getTeam(team), q1x + x1, q1y + y1);
-		g.drawString(getTeam(team + 16), q3x + x1, q3y + y1);
-		g.drawString(getTeam(team + 32), q2x - x2, q2y + y1);
-		g.drawString(getTeam(team + 48), q4x - x2, q4y + y1);
-		g.setColor(Color.GREEN);
-		g.drawString(getOpponent(team), q1x + x1, q1y + y2);
-		g.drawString(getOpponent(team + 16), q3x + x1, q3y + y2);
-		g.drawString(getOpponent(team + 32), q2x - x2, q2y + y2);
-		g.drawString(getOpponent(team + 48), q4x - x2, q4y + y2);
+		g.drawLine(q4x - x2, q4y + y1, q4x - x2, q4y + y2);
+		print(g, teams.get(team), q1x + x1, q1y + y1);
+		print(g, teams.get(team + p), q3x + x1, q3y + y1);
+		print(g, teams.get(team + 2*p), q2x - x2, q2y + y1);
+		print(g, teams.get(team + 3*p), q4x - x2, q4y + y1);
+		print(g, teams.get(team).getOpponent(), q1x + x1, q1y + y2);
+		print(g, teams.get(team + p).getOpponent(), q3x + x1, q3y + y2);
+		print(g, teams.get(team + 2*p).getOpponent(), q2x - x2, q2y + y2);
+		print(g, teams.get(team + 3*p).getOpponent(), q4x - x2, q4y + y2);
 	}
 	
 	public void finalBracket(java.awt.Graphics g, int x1, int x2, int x3, int y1, int y2) {
@@ -114,17 +134,49 @@ public class Graphics extends JPanel implements Runnable {
 		g.drawLine(q1x + x1, q1y + y1, q1x + x2, q1y + y1);
 		g.drawLine(q1x + x1, q1y + y2, q1x + x2, q1y + y2);
 		g.drawLine(q1x + x2, q1y + y1, q1x + x2, q1y + y2);
-		g.drawString(getTeam(team), q1x + x1, q1y + y1);
-		g.drawString(getTeam(team + 1), q1x + x1, q1y + y2);
 		g.drawLine(q2x - x1, q2y + y1, q2x - x2, q2y + y1);
 		g.drawLine(q2x - x1, q2y + y2, q2x - x2, q2y + y2);
 		g.drawLine(q2x - x2, q2y + y1, q2x - x2, q2y + y2);
-		g.drawString(getTeam(team), q1x + x1, q1y + y1);
-		g.drawString(getTeam(team + 1), q1x + x1, q1y + y2);
 		g.drawLine(q1x + x2, q1y + (int)(y1*1.3), q1x + x3, q1y + (int)(y1*1.3));
 		g.drawLine(q2x - x2, q2y + y2 - (int)(y1*.3), q2x - x3, q2y + y2 - (int)(y1*.3));
 		g.drawLine(q2x - x3, (int)(dim*.4), q1x + x3, (int)(dim*.4));
-		g.drawString(getTeam(team), q1x + x2, q1y + (int)(y1*1.3));
-		g.drawString(getTeam(team + 1), q2x - x3, q2y + y2 - (int)(y1*.3));
+		print(g, teams.get(team), q1x + x1, q1y + y1);
+		print(g, teams.get(team).getOpponent(), q1x + x1, q1y + y2);
+		print(g, teams.get(team + 2), q2x - x1, q2y - y1);
+		print(g, teams.get(team + 3), q1x + x1, q1y + y2);
+		print(g, teams.get(team + 4), q1x + x2, q1y + (int)(y1*1.3));
+		print(g, teams.get(team + 5), q2x - x3, q2y + y2 - (int)(y1*.3));
+	}
+	
+	@SuppressWarnings("unlikely-arg-type")
+	public void updateList() {
+		Collections.sort(toRemove);
+		for(int i = 0; i < toRemove.size(); i++) {
+			int p = toRemove.get(i) - i;
+			teams.remove(p);
+		}
+		toRemove.clear();
+		for(int i = 0; i < teams.size(); i++) 
+			teams.get(i).setNum(i);
+		for(int i = 0; i <teams.size() - 1; i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
+		}
+	}
+	
+	public void updateList(int t) {
+		Game game = new Game(teams.get(t), teams.get(t).getOpponent());
+		if(!game.getWinner().equals(teams.get(t))) 
+			toRemove.add(t);
+		else
+			toRemove.add(teams.get(t).getOpponent().getNum());
+	}
+	
+	public void print(java.awt.Graphics g, Team team, int x, int y) {
+		if(team.isWinner()) 
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+		g.drawString("  " + team, x, y);
 	}
 }
