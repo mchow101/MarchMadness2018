@@ -10,7 +10,7 @@ public class Graphics extends JPanel implements Runnable {
 	private Thread t;
 	private JFrame frame = new JFrame("March Madness Bracket");
 	private boolean run = true;
-	private int dim = 800;
+	private int dim = 1400;
 	private int q1x = 25, q1y = (int)(dim*.8)/7, q2x = (int)(dim*1.2) - 25, q2y = (int)(dim*.8)/7;
 	private int q3x = 25, q3y = (int)(dim*.4) + (int)(dim*.8)/42, q4x = (int)(dim*1.2) - 25, q4y = (int)(dim*.4) + (int)(dim*.8)/42;
 	private ArrayList<Team> teams = new ArrayList<Team>();
@@ -53,8 +53,8 @@ public class Graphics extends JPanel implements Runnable {
 		super.paintComponent(g);
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, (int)(dim*1.2), (int)(dim*.8));
-		g.setColor(Color.WHITE);
-		g.setFont(new Font("Times New Roman", Font.PLAIN, 50));
+		g.setColor(Color.ORANGE);
+		g.setFont(new Font("Times New Roman", Font.BOLD, 50));
 		String txt = "March Madness Bracket";
 		g.drawString(txt, (int)(dim*.6) - 250, dim/10);
 		//Bracket
@@ -96,10 +96,14 @@ public class Graphics extends JPanel implements Runnable {
 		updateList();
 		//Quarterfinals 
 		team = 0;
-		updateList(0);
-		updateList(2);
-		bracket(g, 3*x, 4*x, (int)(y*(3.5)), (int)(y*(11.5)));
+		System.out.println(teams);
+		updateList(team);
+		updateList(team + 2);
+		updateList(team + 4);
+		updateList(team + 6);
+		bracket(g, 3*x, 4*x, (int)(y*3.5), (int)(y*11.5));
 		updateList();
+
 		//Semifinals and Finals
 		finalBracket(g, 4*x, 5*x, (int)(6.3*x), (int)(y*(7.5)), (int)(y*(23.5)));
 	}
@@ -140,15 +144,24 @@ public class Graphics extends JPanel implements Runnable {
 		g.drawLine(q1x + x2, q1y + (int)(y1*1.3), q1x + x3, q1y + (int)(y1*1.3));
 		g.drawLine(q2x - x2, q2y + y2 - (int)(y1*.3), q2x - x3, q2y + y2 - (int)(y1*.3));
 		g.drawLine(q2x - x3, (int)(dim*.4), q1x + x3, (int)(dim*.4));
+		updateList(team);
 		print(g, teams.get(team), q1x + x1, q1y + y1);
 		print(g, teams.get(team).getOpponent(), q1x + x1, q1y + y2);
-		print(g, teams.get(team + 2), q2x - x1, q2y - y1);
-		print(g, teams.get(team + 3), q1x + x1, q1y + y2);
-		print(g, teams.get(team + 4), q1x + x2, q1y + (int)(y1*1.3));
-		print(g, teams.get(team + 5), q2x - x3, q2y + y2 - (int)(y1*.3));
+		team += 2;
+		updateList(team);
+		print(g, teams.get(team), q2x - x2, q2y + y1);
+		print(g, teams.get(team).getOpponent(), q2x - x2, q2y + y2);
+		updateList();
+		team = 0;
+		updateList(team);
+		print(g, teams.get(team), q1x + x2, q1y + (int)(y1*1.3));
+		print(g, teams.get(team).getOpponent(), q2x - x3, q2y + y2 - (int)(y1*.3));
+		updateList();
+		g.setColor(Color.MAGENTA);
+		g.setFont(new Font("Times New Roman", Font.BOLD, dim/40));
+		g.drawString(" " + teams.get(team), q2x - x3, (int)(dim*.4));
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
 	public void updateList() {
 		Collections.sort(toRemove);
 		for(int i = 0; i < toRemove.size(); i++) {
@@ -162,21 +175,25 @@ public class Graphics extends JPanel implements Runnable {
 			teams.get(i).setOpponent(teams.get(i + 1));
 			teams.get(i + 1).setOpponent(teams.get(i));
 		}
+		team = 0;
 	}
 	
 	public void updateList(int t) {
 		Game game = new Game(teams.get(t), teams.get(t).getOpponent());
-		if(!game.getWinner().equals(teams.get(t))) 
+		if(!game.getWinner().equals(teams.get(t)))
 			toRemove.add(t);
 		else
 			toRemove.add(teams.get(t).getOpponent().getNum());
 	}
 	
 	public void print(java.awt.Graphics g, Team team, int x, int y) {
-		if(team.isWinner()) 
+		if(team.isWinner()) {
 			g.setColor(Color.GREEN);
-		else
+			g.setFont(new Font("Times New Roman", Font.BOLD, dim/50));
+		} else {
 			g.setColor(Color.RED);
+			g.setFont(new Font("Times New Roman", Font.PLAIN, dim/50));
+		}
 		g.drawString("  " + team, x, y);
 	}
 }
