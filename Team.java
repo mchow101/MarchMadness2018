@@ -12,12 +12,14 @@ public class Team implements Comparable<Team> {
 	private int index; //ArrayList organization
 	private Team opponent; //current opposing Team
 	private boolean winner, played; //whether or not win, played yet in current round
+	private ArrayList<Boolean> wins = new ArrayList<Boolean>();
 	private static int line = 0; //keeping track of data input
 	private static Scanner scan;
 	
-	public Team(int num) throws FileNotFoundException {
+	public Team(int index) throws FileNotFoundException {
 		if(line == 0)
 			scan = new Scanner(new File("2016data.txt"));
+		this.index = index + 1;
 		this.setStats();
 		this.winner = false;
 		this.played = false;
@@ -32,9 +34,9 @@ public class Team implements Comparable<Team> {
 	
 	public void setOpponent(Team team) { this.opponent = team; }
 	
-	public Team getOpponent() {	return this.opponent; }
+	public Team getOpponent() { return this.opponent; }
 	
-	public String toString() { return this.name; }
+	public String toString() { return "" + this.name; }
 	
 	public int getNum() { return this.num; }
 	
@@ -42,18 +44,28 @@ public class Team implements Comparable<Team> {
 
 	public void setIndex(int i) { this.num = i; }
 	
-	public void setWinner(boolean b) { this.winner = b; }
+	public void setWinner(boolean b) {  this.wins.add(b); this.winner = b; }
 	
 	public boolean isWinner() { return this.winner; }
 	
-	public static void reset(ArrayList<Team> teams) { 
-		for(int i = 0; i < teams.size(); i++) teams.get(i).played = false; 
-		Collections.sort(teams);
-	}
+	public boolean isWinner(int x) { return this.wins.get(x); }
 	
 	public void played() { this.played = true; }
 	
 	public boolean getPlayed() { return this.played; }
 	
-	public int compareTo(Team t) { return this.index - t.index; }
+	public static void reset(ArrayList<Team> teams) { 
+		for(int i = 0; i < teams.size(); i++) teams.get(i).played = false; 
+	}
+	
+	public static Team getTeam(ArrayList<Team> team, int pos) {
+		int i = 0; 
+		while(i < team.size() && team.get(i).getIndex() != pos)
+			i++;
+		if(i < team.size())
+			return team.get(i);
+		return team.get(0);
+	}
+	
+	public int compareTo(Team t) { return -(t.index - this.index); }
 }
