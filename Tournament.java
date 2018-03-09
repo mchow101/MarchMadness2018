@@ -1,31 +1,53 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class Tournament {
 	private ArrayList<Team> teams = new ArrayList<Team>();
 	private ArrayList<ArrayList<Team>> results = new ArrayList<ArrayList<Team>>();
-	public Tournament(ArrayList<Team> teams) {
-		int count = 0;
+	private Scanner scan;
+	
+	public Tournament(ArrayList<Team> teams) throws FileNotFoundException {
+		scan = new Scanner(new File("TeamSetup.txt"));
 		//sets teams in order they are playing
+//		this.teams.addAll(teams);
+		
+		ArrayList<Integer> pos = new ArrayList<Integer>();
+		while(scan.hasNextInt()) pos.add(scan.nextInt());
 		for(int i = 0; i < teams.size(); i++) {
-			this.teams.add(teams.get(i));
-			teams.get(i).setOpponent(teams.get(16*(1 + i/16) - i%16 - 1));
-			if(!teams.get(i).getPlayed()) {
-				teams.get(i).setIndex(count);
-				teams.get(i).getOpponent().setIndex(count + 1);
-				teams.get(i).played();
-				teams.get(i).getOpponent().played();
-				count += 2;
+			int count = pos.get(i) + 16*(i/16);
+			this.teams.add(Team.getTeam(teams, count));
+			System.out.println(i + " " + count + " " + this.teams);
+		}
+		
+		for(int i = 0; i < this.teams.size(); i+=2) {
+			this.teams.get(i).setOpponent(this.teams.get(i + 1));
+			this.teams.get(i + 1).setOpponent(this.teams.get(i));
+			if(!this.teams.get(i).getPlayed()) {
+				this.teams.get(i).setIndex(i);
+				this.teams.get(i).getOpponent().setIndex(i + 1);
+				this.teams.get(i).played();
+				this.teams.get(i).getOpponent().played();
 			}
 		}
-		Team.reset(teams);
+
+		getStartingTeams();
+		round1();
+		round2();
+		round3();
+		roundQuarters();
+		roundSemis();
+		roundFinals();
+		System.out.println(getWinner());
 	}
 	
-	public ArrayList<Team> getStartingTeams() {
-		return teams;
+	public void getStartingTeams() {
+		results.add(0, (ArrayList<Team>) teams.clone());
 	}
 	
-	public ArrayList<Team> round1() {
+	public void round1() {
 		System.out.println("Round 1*****");
 		Team.reset(teams);
 		ArrayList<Team> list = new ArrayList<Team>();
@@ -37,182 +59,183 @@ public class Tournament {
 				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(1, (ArrayList<Team>) teams.clone());
 	}
 	
-	public ArrayList<Team> getRound1() {
-		if(results.size() < 1) results.add(round1());
-		return results.get(0);
-	}
-	
-	public ArrayList<Team> round2() {
+	public void round2() {
 		System.out.println("Round 2*****");
-		ArrayList<Team> temp = results.get(0);
 		ArrayList<Team> list = new ArrayList<Team>();
-		Team.reset(temp);
+		Team.reset(teams);
 		
-		for(int i = 0; i < temp.size(); i+=2) {
-			temp.get(i).setOpponent(temp.get(i + 1));
-			temp.get(i + 1).setOpponent(temp.get(i));
+		for(int i = 0; i < teams.size(); i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
 		
-		for(int i = 0; i < temp.size(); i++) { 
-			if(!temp.get(i).getPlayed()) {
-				System.out.println(temp.get(i) + " " + temp.get(i).getOpponent());
-				list.add(game(temp.get(i), temp.get(i).getOpponent()));
-				temp.get(i).played();
-				temp.get(i).getOpponent().played();
+		for(int i = 0; i < teams.size(); i++) { 
+			if(!teams.get(i).getPlayed()) {
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
+				list.add(game(teams.get(i), teams.get(i).getOpponent()));
+				teams.get(i).played();
+				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
-	}
-		
-	public ArrayList<Team> getRound2() {
-		if(results.size() < 2) results.add(round2());
-		return results.get(1);
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(2, (ArrayList<Team>) teams.clone());
 	}
 
-	public ArrayList<Team> round3() {
+	public void round3() {
 		System.out.println("Round 3*****");
-		ArrayList<Team> temp = results.get(1);
 		ArrayList<Team> list = new ArrayList<Team>();
-		Team.reset(temp);
+		Team.reset(teams);
 		
-		for(int i = 0; i < temp.size(); i+=2) {
-			temp.get(i).setOpponent(temp.get(i + 1));
-			temp.get(i + 1).setOpponent(temp.get(i));
+		for(int i = 0; i < teams.size(); i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
 		
-		for(int i = 0; i < temp.size(); i++) { 
-			if(!temp.get(i).getPlayed()) {
-				System.out.println(temp.get(i) + " " + temp.get(i).getOpponent());
-				list.add(game(temp.get(i), temp.get(i).getOpponent()));
-				temp.get(i).played();
-				temp.get(i).getOpponent().played();
+		for(int i = 0; i < teams.size(); i++) { 
+			if(!teams.get(i).getPlayed()) {
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
+				list.add(game(teams.get(i), teams.get(i).getOpponent()));
+				teams.get(i).played();
+				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(3, (ArrayList<Team>) teams.clone());
 	}
 	
-	public ArrayList<Team> getRound3() {
-		if(results.size() < 3) results.add(round3());
-		return results.get(2);
-	}
-	
-	public ArrayList<Team> roundQuarters() {
+	public void roundQuarters() {
 		System.out.println("Round Q*****");
-		ArrayList<Team> temp = results.get(2);
 		ArrayList<Team> list = new ArrayList<Team>();
-		Team.reset(temp);
+		Team.reset(teams);
 		
-		for(int i = 0; i < temp.size(); i+=2) {
-			temp.get(i).setOpponent(temp.get(i + 1));
-			temp.get(i + 1).setOpponent(temp.get(i));
+		for(int i = 0; i < teams.size(); i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
 		
-		for(int i = 0; i < temp.size(); i++) { 
-			if(!temp.get(i).getPlayed()) {
-				System.out.println(temp.get(i) + " " + temp.get(i).getOpponent());
-				list.add(game(temp.get(i), temp.get(i).getOpponent()));
-				temp.get(i).played();
-				temp.get(i).getOpponent().played();
+		for(int i = 0; i < teams.size(); i++) { 
+			if(!teams.get(i).getPlayed()) {
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
+				list.add(game(teams.get(i), teams.get(i).getOpponent()));
+				teams.get(i).played();
+				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(4, (ArrayList<Team>) teams.clone());
 	}
 	
-	public ArrayList<Team> getRoundQuarters() {
-		if(results.size() < 4) results.add(roundQuarters());
-		return results.get(3);
-	}
-
-	public ArrayList<Team> roundSemis() {
+	public void roundSemis() {
 		System.out.println("Round S*****");
-		ArrayList<Team> temp = results.get(3);
 		ArrayList<Team> list = new ArrayList<Team>();
-		Team.reset(temp);
+		Team.reset(teams);
 		
-		for(int i = 0; i < temp.size(); i+=2) {
-			temp.get(i).setOpponent(temp.get(i + 1));
-			temp.get(i + 1).setOpponent(temp.get(i));
+		for(int i = 0; i < teams.size(); i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
 		
-		for(int i = 0; i < temp.size(); i++) { 
-			if(!temp.get(i).getPlayed()) {
-				System.out.println(temp.get(i) + " " + temp.get(i).getOpponent());
-				list.add(game(temp.get(i), temp.get(i).getOpponent()));
-				temp.get(i).played();
-				temp.get(i).getOpponent().played();
+		for(int i = 0; i < teams.size(); i++) { 
+			if(!teams.get(i).getPlayed()) {
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
+				list.add(game(teams.get(i), teams.get(i).getOpponent()));
+				teams.get(i).played();
+				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(5, (ArrayList<Team>) teams.clone());
 	}
 	
-	public ArrayList<Team> getRoundSemis() {
-		if(results.size() < 5) results.add(roundSemis());
-		return results.get(4);
-	}
-	
-
-	public ArrayList<Team> roundFinals() {
+	public void roundFinals() {
 		System.out.println("Round F*****");
-		ArrayList<Team> temp = results.get(4);
 		ArrayList<Team> list = new ArrayList<Team>();
-		Team.reset(temp);
+		Team.reset(teams);
 		
-		for(int i = 0; i < temp.size(); i+=2) {
-			temp.get(i).setOpponent(temp.get(i + 1));
-			temp.get(i + 1).setOpponent(temp.get(i));
+		for(int i = 0; i < teams.size(); i+=2) {
+			teams.get(i).setOpponent(teams.get(i + 1));
+			teams.get(i + 1).setOpponent(teams.get(i));
 		}
 		
-		for(int i = 0; i < temp.size(); i++) { 
-			if(!temp.get(i).getPlayed()) {
-				System.out.println(temp.get(i) + " " + temp.get(i).getOpponent());
-				list.add(game(temp.get(i), temp.get(i).getOpponent()));
-				temp.get(i).played();
-				temp.get(i).getOpponent().played();
+		for(int i = 0; i < teams.size(); i++) { 
+			if(!teams.get(i).getPlayed()) {
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
+				list.add(game(teams.get(i), teams.get(i).getOpponent()));
+				teams.get(i).played();
+				teams.get(i).getOpponent().played();
 			}
 		}
-		return list;
-	}
-	
-	public ArrayList<Team> getRoundFinals() {
-		if(results.size() < 6) results.add(roundFinals());
-		return results.get(5);
+		for(int i = 0; i < list.size(); i++) {
+			int j = 0;
+			while(!teams.get(j).equals(list.get(i))) j++;
+			teams.remove(j);
+		}
+		results.add(6, (ArrayList<Team>) teams.clone());
 	}
 	
 	public Team getWinner() {
 		System.out.println("Winner*****");
-		return results.get(5).get(0);
+		return teams.get(0);
 	}
 	
 	public Team getTeam(int round, int index) {
-		ArrayList<Team> temp = results.get(round - 1);
-		for(int i = 0; i < temp.size(); i++) 
-			if(temp.get(i).getIndex() == index) return temp.get(i);
+		ArrayList<Team> teams = results.get(round - 1);
+		for(int i = 0; i < teams.size(); i++) 
+			if(teams.get(i).getIndex() == index) return teams.get(i);
 		return null;
 	}
 	
 	public Team game(Team a, Team b) {
-		if(a.getNum() > b.getNum()) {
+		
+		double p = Math.random();
+		if(p < 0.5) {
 			a.setWinner(true);
-			b.getOpponent().setWinner(false);
+			b.setWinner(false);
 			return a;
 		} else {
 			a.setWinner(false);
 			b.setWinner(true);
 			 return b;
 		}
+		
+		/*
+		if(a.getNum() > b.getNum()) {
+			a.setWinner(true);
+			b.setWinner(false);
+			return a;
+		} else {
+			a.setWinner(false);
+			b.setWinner(true);
+			 return b;
+		}
+		*/
 	}
 	
 	public ArrayList<ArrayList<Team>> results() {
-		getRound1();
-		getRound2();
-		getRound3();
-		getRoundQuarters();
-		getRoundSemis();
-		getRoundFinals();
-		System.out.println(getWinner());
 		return results;
 	}
 }
