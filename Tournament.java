@@ -205,7 +205,7 @@ public class Tournament {
 	}
 		
 	public Team game(Team a, Team b) {
-		if(a.getNum() > b.getNum()) {
+		if(a.getNum() < b.getNum()) {
 			a.setWinner(true);
 			b.setWinner(false);
 			return a;
