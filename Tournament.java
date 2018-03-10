@@ -12,14 +12,18 @@ public class Tournament {
 	public Tournament(ArrayList<Team> teams) throws FileNotFoundException {
 		scan = new Scanner(new File("TeamSetup.txt"));
 		//sets teams in order they are playing
-//		this.teams.addAll(teams);
 		
 		ArrayList<Integer> pos = new ArrayList<Integer>();
-		while(scan.hasNextInt()) pos.add(scan.nextInt());
-		for(int i = 0; i < teams.size(); i++) {
-			int count = pos.get(i) + 16*(i/16);
-			this.teams.add(Team.getTeam(teams, count));
-			System.out.println(i + " " + count + " " + this.teams);
+		ArrayList<String> names = new ArrayList<String>();
+		while(scan.hasNextInt()) {
+			pos.add(scan.nextInt());
+			names.add(scan.nextLine());
+			System.out.println(names);
+		}
+		for(int i = 0; i < 64; i++) {
+			int count = pos.get(i) + 16*((i)/16);
+			this.teams.add(Team.getTeam(teams, names.get(i).substring(1)));
+			System.out.println(count + " " + this.teams.get(i));
 		}
 		
 		for(int i = 0; i < this.teams.size(); i+=2) {
@@ -53,10 +57,10 @@ public class Tournament {
 		ArrayList<Team> list = new ArrayList<Team>();
 		for(int i = 0; i < teams.size(); i++) {
 			if(!teams.get(i).getPlayed()) {
-				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
 				list.add(game(teams.get(i), teams.get(i).getOpponent()));
 				teams.get(i).played();
 				teams.get(i).getOpponent().played();
+				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
 			}
 		}
 		for(int i = 0; i < list.size(); i++) {
@@ -150,11 +154,11 @@ public class Tournament {
 		ArrayList<Team> list = new ArrayList<Team>();
 		Team.reset(teams);
 		
-		for(int i = 0; i < teams.size(); i+=2) {
-			teams.get(i).setOpponent(teams.get(i + 1));
-			teams.get(i + 1).setOpponent(teams.get(i));
-		}
-		
+		teams.get(0).setOpponent(teams.get(2));
+		teams.get(2).setOpponent(teams.get(0));
+		teams.get(1).setOpponent(teams.get(3));
+		teams.get(3).setOpponent(teams.get(1));
+
 		for(int i = 0; i < teams.size(); i++) { 
 			if(!teams.get(i).getPlayed()) {
 				System.out.println(teams.get(i) + " " + teams.get(i).getOpponent());
@@ -176,10 +180,8 @@ public class Tournament {
 		ArrayList<Team> list = new ArrayList<Team>();
 		Team.reset(teams);
 		
-		for(int i = 0; i < teams.size(); i+=2) {
-			teams.get(i).setOpponent(teams.get(i + 1));
-			teams.get(i + 1).setOpponent(teams.get(i));
-		}
+		teams.get(0).setOpponent(teams.get(1));
+		teams.get(1).setOpponent(teams.get(0));
 		
 		for(int i = 0; i < teams.size(); i++) { 
 			if(!teams.get(i).getPlayed()) {
@@ -201,28 +203,8 @@ public class Tournament {
 		System.out.println("Winner*****");
 		return teams.get(0);
 	}
-	
-	public Team getTeam(int round, int index) {
-		ArrayList<Team> teams = results.get(round - 1);
-		for(int i = 0; i < teams.size(); i++) 
-			if(teams.get(i).getIndex() == index) return teams.get(i);
-		return null;
-	}
-	
+		
 	public Team game(Team a, Team b) {
-		
-		double p = Math.random();
-		if(p < 0.5) {
-			a.setWinner(true);
-			b.setWinner(false);
-			return a;
-		} else {
-			a.setWinner(false);
-			b.setWinner(true);
-			 return b;
-		}
-		
-		/*
 		if(a.getNum() > b.getNum()) {
 			a.setWinner(true);
 			b.setWinner(false);
@@ -232,7 +214,6 @@ public class Tournament {
 			b.setWinner(true);
 			 return b;
 		}
-		*/
 	}
 	
 	public ArrayList<ArrayList<Team>> results() {
