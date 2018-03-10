@@ -12,20 +12,17 @@ public class Graphics extends JPanel implements Runnable {
 	private int dim = 800;
 	private int q1x = 25, q1y = (int)(dim*.8)/7, q2x = (int)(dim*1.2) - 25, q2y = (int)(dim*.8)/7;
 	private int q3x = 25, q3y = (int)(dim*.4) + (int)(dim*.8)/42, q4x = (int)(dim*1.2) - 25, q4y = (int)(dim*.4) + (int)(dim*.8)/42;
-	private ArrayList<Team> teams = new ArrayList<Team>();
-	private ArrayList<Integer> points = new ArrayList<Integer>();
-	private int team = 0;
-	private int round = 0;
 	private Tournament tournament;
 	
 	public Graphics() throws FileNotFoundException {
-		for(int i = 0; i < 64; i++) 
+		ArrayList<Team> teams = new ArrayList<Team>();
+		for(int i = 0; i < 300; i++) 
 			teams.add(new Team(i));
 		tournament = new Tournament(teams);
 		//Create JFrame
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize((int)(dim*1.2) + 15, (int)(dim*.8) + 35);
-//		frame.setVisible(true);
+		frame.setVisible(true);
 		frame.add(this);
 		frame.repaint();
 		t = new Thread(this);
@@ -51,38 +48,147 @@ public class Graphics extends JPanel implements Runnable {
 		int x = (int)(dim*.1);
 		g.setFont(new Font("Times New Roman", Font.PLAIN, dim/50));
 		//Round 1
-		for(int i = 0; i < 16; i+=2) {
-			team = i/2;
-			bracket(g, 0, x, y*i, y*(i + 1));
+		for(int i = 0; i < 16; i++) {
+			if(i%2 == 0) bracket(g, 0, x, y*i, y*(i + 1));
+			if(tournament.results().get(0).get(i).equals(tournament.results().get(1).get(i/2)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(0).get(i), q1x, q1y + y*i);
+			if(tournament.results().get(0).get(i + 16).equals(tournament.results().get(1).get(i/2 + 8)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(0).get(i + 16), q2x - x, q2y + y*i);
+			if(tournament.results().get(0).get(i + 32).equals(tournament.results().get(1).get(i/2 + 16)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(0).get(i + 32), q3x, q3y + y*i);
+			if(tournament.results().get(0).get(i + 48).equals(tournament.results().get(1).get(i/2 + 24)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(0).get(i + 48), q4x - x, q4y + y*i);
 		}
-		round = 0;
-//		print(g);
 		//Round 2
-		round++;
-		for(int i = 0; i < 16; i+=4) {
-			team = i/4;
-			bracket(g, x, 2*x, (int)(y*(i + 0.5)), (int)(y*(i + 2.5)));
+		for(int i = 0; i < 16; i+=2) {
+			if(i%4 == 0) bracket(g, x, 2*x, (int)(y*(i + 0.5)), (int)(y*(i + 2.5)));
+			if(tournament.results().get(1).get(i/2).equals(tournament.results().get(2).get(i/4)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(1).get(i/2), q1x + x, q1y + (int)(y*(i + 0.5)));
+			if(tournament.results().get(1).get(i/2 + 8).equals(tournament.results().get(2).get(i/4 + 4)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(1).get(i/2 + 8), q2x - 2*x, q2y + (int)(y*(i + 0.5)));
+			if(tournament.results().get(1).get(i/2 + 16).equals(tournament.results().get(2).get(i/4 + 8)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(1).get(i/2 + 16), q3x + x, q3y + (int)(y*(i + 0.5)));
+			if(tournament.results().get(1).get(i/2 + 24).equals(tournament.results().get(2).get(i/4 + 12)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(1).get(i/2 + 24), q4x - 2*x, q4y + (int)(y*(i + 0.5)));
 		}
-//		print(g);
 		//Round 3
-		round++;
-		for(int i = 0; i < 16; i+=8) {
-			team = i/8;
-			bracket(g, 2*x, 3*x, (int)(y*(i + 1.5)), (int)(y*(i + 5.5)));
+		for(int i = 0; i < 16; i+=4) {
+			if(i%8 == 0) bracket(g, 2*x, 3*x, (int)(y*(i + 1.5)), (int)(y*(i + 5.5)));
+			if(tournament.results().get(2).get(i/4).equals(tournament.results().get(3).get(i/8)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(2).get(i/4), q1x + 2*x, q1y + (int)(y*(i + 1.5)));
+			if(tournament.results().get(2).get(i/4 + 4).equals(tournament.results().get(3).get(i/8 + 2)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(2).get(i/4 + 4), q2x - 3*x, q2y + (int)(y*(i + 1.5)));
+			if(tournament.results().get(2).get(i/4 + 8).equals(tournament.results().get(3).get(i/8 + 4)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(2).get(i/4 + 8), q3x + 2*x, q3y + (int)(y*(i + 1.5)));
+			if(tournament.results().get(2).get(i/4 + 12).equals(tournament.results().get(3).get(i/8 + 6)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(2).get(i/4 + 12), q4x - 3*x, q4y + (int)(y*(i + 1.5)));
 		}
-		//Quarterfinals 
-		round++;
-		team = 0;
-		bracket(g, 3*x, 4*x, (int)(y*3.5), (int)(y*11.5));
+//		//Quarterfinals 
+		for(int i = 0; i < 16; i+=8) {
+			if(i == 0) bracket(g, 3*x, 4*x, (int)(y*(i + 3.5)), (int)(y*(i + 11.5)));
+			if(tournament.results().get(3).get(i/8).equals(tournament.results().get(4).get(i/16)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(3).get(i/8), q1x + 3*x, q1y + (int)(y*(i + 3.5)));
+			if(tournament.results().get(3).get(i/8 + 2).equals(tournament.results().get(4).get(i/16 +1)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(3).get(i/8 + 2), q2x - 4*x, q2y + (int)(y*(i + 3.5)));
+			if(tournament.results().get(3).get(i/8 + 4).equals(tournament.results().get(4).get(i/16 + 2)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(3).get(i/8 + 4), q3x + 3*x, q3y + (int)(y*(i + 3.5)));
+			if(tournament.results().get(3).get(i/8 + 6).equals(tournament.results().get(4).get(i/16 + 3)))
+				g.setColor(Color.GREEN);
+			else
+				g.setColor(Color.RED);
+			g.drawString("  " + tournament.results().get(3).get(i/8 + 6), q4x - 4*x, q4y + (int)(y*(i + 3.5)));
+		}
 
 		//Semifinals and Finals
 		finalBracket(g, 4*x, 5*x, (int)(6.3*x), (int)(y*(7.5)), (int)(y*(23.5)));
-		
+		if(tournament.results().get(4).get(0).equals(tournament.results().get(5).get(0)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.MAGENTA);
+		g.drawString("  " + tournament.results().get(4).get(0), q1x + 4*x, q1y + (int)(y*(7.5)));
+		if(tournament.results().get(4).get(1).equals(tournament.results().get(5).get(0)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.PINK);
+		g.drawString("  " + tournament.results().get(4).get(1), q2x - 5*x, q2y + (int)(y*(7.5)));
+		if(tournament.results().get(4).get(2).equals(tournament.results().get(5).get(1)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.ORANGE);
+		g.drawString("  " + tournament.results().get(4).get(2), q3x + 4*x, q3y + (int)(y*(7.25)));
+		if(tournament.results().get(4).get(3).equals(tournament.results().get(5).get(1)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.YELLOW);
+		g.drawString("  " + tournament.results().get(4).get(3), q4x - 5*x, q4y + (int)(y*(7.25)));
+		if(tournament.results().get(5).get(0).equals(tournament.results().get(6).get(0)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.CYAN);
+		g.drawString("  " + tournament.results().get(5).get(0), q1x + 5*x, q1y + (int)(y*(7.5*1.3)));
+		if(tournament.results().get(5).get(1).equals(tournament.results().get(6).get(0)))
+			g.setColor(Color.GREEN);
+		else
+			g.setColor(Color.RED);
+//		g.setColor(Color.GRAY);
+		g.drawString("  " + tournament.results().get(5).get(1), q2x - (int)(6.3*x), (q2y + (int)(y*23.5) - (int)(y*7.5*.3)));
+		g.setColor(Color.GREEN);
+		g.drawString("  " + tournament.results().get(6).get(0), q2x - (int)(6.3*x), (int)(dim*.4));
+		System.out.println(tournament.results());
 	}
 	
 	public void bracket(java.awt.Graphics g, int x1, int x2, int y1, int y2) {
 		g.setColor(Color.WHITE);
-		int p = teams.size()/4;
 		g.drawLine(q1x + x1, q1y + y1, q1x + x2, q1y + y1);
 		g.drawLine(q1x + x1, q1y + y2, q1x + x2, q1y + y2);
 		g.drawLine(q1x + x2, q1y + y1, q1x + x2, q1y + y2);
@@ -95,18 +201,6 @@ public class Graphics extends JPanel implements Runnable {
 		g.drawLine(q4x - x1, q4y + y1, q4x - x2, q4y + y1);
 		g.drawLine(q4x - x1, q4y + y2, q4x - x2, q4y + y2);
 		g.drawLine(q4x - x2, q4y + y1, q4x - x2, q4y + y2);
-		print(g, Team.getTeam(tournament.results().get(round), team).getOpponent(), q1x + x1, q1y + y1);
-		//print(g, Team.getTeam(tournament.results().get(round), team), q1x + x1, q1y + y2);
-		/*team++;
-		print(g, teams.get(team), q3x + x1, q3y + y1);
-		print(g, teams.get(team).getOpponent(), q3x + x1, q3y + y2);
-		team++;
-		print(g, teams.get(team), q2x - x2, q2y + y1);
-		print(g, teams.get(team).getOpponent(), q2x - x2, q2y + y2);
-		team++;
-		print(g, teams.get(team), q4x - x2, q4y + y1);
-		print(g, teams.get(team).getOpponent(), q4x - x2, q4y + y2);
-		*/
 	}
 	
 	public void finalBracket(java.awt.Graphics g, int x1, int x2, int x3, int y1, int y2) {
@@ -120,34 +214,5 @@ public class Graphics extends JPanel implements Runnable {
 		g.drawLine(q1x + x2, q1y + (int)(y1*1.3), q1x + x3, q1y + (int)(y1*1.3));
 		g.drawLine(q2x - x2, q2y + y2 - (int)(y1*.3), q2x - x3, q2y + y2 - (int)(y1*.3));
 		g.drawLine(q2x - x3, (int)(dim*.4), q1x + x3, (int)(dim*.4));
-//		round++;
-//		print(g, tournament.getRoundQuarters().get(team), q1x + x1, q1y + y1);
-//		print(g, tournament.getRoundQuarters().get(team).getOpponent(), q1x + x1, q1y + y2);
-//		team = 1;
-//		print(g, tournament.getRoundQuarters().get(team), q2x - x2, q2y + y1);
-//		print(g, tournament.getRoundQuarters().get(team).getOpponent(), q2x - x2, q2y + y2);
-//		team = 0;
-//		round++;
-//		print(g, tournament.getRoundSemis().get(team), q1x + x2, q1y + (int)(y1*1.3));
-//		print(g, tournament.getRoundSemis().get(team).getOpponent(), q2x - x3, q2y + y2 - (int)(y1*.3));
-//		g.setColor(Color.MAGENTA);
-//		g.setFont(new Font("Times New Roman", Font.BOLD, dim/40));
-//		g.drawString(" " + tournament.getWinner(), q2x - x3, (int)(dim*.4));
-	}
-	
-	public void print(java.awt.Graphics g, Team t, int x, int y) {
-		if(t.isWinner(round)) {
-			g.setColor(Color.GREEN);
-			g.setFont(new Font("Times New Roman", Font.BOLD, dim/50));
-			g.drawString("  " + t, x, y);
-			g.setColor(Color.RED);
-			g.drawString("  " + t.getOpponent(), x, y + 100);
-		} else {
-			g.setColor(Color.RED);
-			g.setFont(new Font("Times New Roman", Font.PLAIN, dim/50));
-			g.drawString("  " + t, x, y);
-			g.setColor(Color.GREEN);
-			g.drawString("  " + t.getOpponent(), x, y + 100);
-		}
 	}
 }
