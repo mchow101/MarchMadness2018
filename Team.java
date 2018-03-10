@@ -12,7 +12,7 @@ public class Team implements Comparable<Team> {
 	private int index; //ArrayList organization
 	private Team opponent; //current opposing Team
 	private boolean winner, played; //whether or not win, played yet in current round
-	private ArrayList<Boolean> wins = new ArrayList<Boolean>();
+	private double adjem, adjo, adjd, adjt, luck;
 	private static int line = 0; //keeping track of data input
 	private static Scanner scan;
 	
@@ -30,6 +30,22 @@ public class Team implements Comparable<Team> {
 	public void setStats() {
 		this.num = scan.nextInt();
 		this.name = scan.next();
+		scan.next();
+		while(!scan.hasNextDouble()) scan.next();
+		this.adjem = scan.nextDouble();
+		while(!scan.hasNextDouble()) scan.next();
+		this.adjo = scan.nextDouble();
+		while(!scan.hasNextDouble()) scan.next();
+		scan.next();
+		this.adjd = scan.nextDouble();
+		while(!scan.hasNextDouble()) scan.next();
+		scan.next();
+		this.adjt = scan.nextDouble();
+		while(!scan.hasNextDouble()) scan.next();
+		scan.next();
+		this.luck = scan.nextDouble();
+		System.out.println(this.name + " " + this.adjem + " " + this.adjo + " " + this.adjd + "  " + this.adjt + " " + this.luck);
+		
 	}
 	
 	public void setOpponent(Team team) { this.opponent = team; }
@@ -38,18 +54,16 @@ public class Team implements Comparable<Team> {
 	
 	public String toString() { return "" + this.name; }
 	
-	public int getNum() { return this.num; }
+	public int getNum() { System.out.println(this.num); return this.num; }
 	
 	public int getIndex() { return this.index; }
 
 	public void setIndex(int i) { this.num = i; }
 	
-	public void setWinner(boolean b) {  this.wins.add(b); this.winner = b; }
+	public void setWinner(boolean b) { this.winner = b; }
 	
 	public boolean isWinner() { return this.winner; }
-	
-	public boolean isWinner(int x) { return this.wins.get(x); }
-	
+		
 	public void played() { this.played = true; }
 	
 	public boolean getPlayed() { return this.played; }
@@ -58,9 +72,9 @@ public class Team implements Comparable<Team> {
 		for(int i = 0; i < teams.size(); i++) teams.get(i).played = false; 
 	}
 	
-	public static Team getTeam(ArrayList<Team> team, int pos) {
+	public static Team getTeam(ArrayList<Team> team, String s) {
 		int i = 0; 
-		while(i < team.size() && team.get(i).getIndex() != pos)
+		while(i < team.size() && !team.get(i).name.equals(s))
 			i++;
 		if(i < team.size())
 			return team.get(i);
