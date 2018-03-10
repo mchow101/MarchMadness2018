@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Team implements Comparable<Team> {
 	private String name;
-	private int num; //value determining how good team is
+	private double num; //value determining how good team is
 	private int index; //ArrayList organization
 	private Team opponent; //current opposing Team
 	private boolean winner, played; //whether or not win, played yet in current round
@@ -28,24 +28,28 @@ public class Team implements Comparable<Team> {
 	}
 	
 	public void setStats() {
-		this.num = scan.nextInt();
-		this.name = scan.next();
+		scan.nextInt();
+		name = scan.next();
 		scan.next();
 		while(!scan.hasNextDouble()) scan.next();
-		this.adjem = scan.nextDouble();
+		adjem = scan.nextDouble();
 		while(!scan.hasNextDouble()) scan.next();
-		this.adjo = scan.nextDouble();
-		while(!scan.hasNextDouble()) scan.next();
-		scan.next();
-		this.adjd = scan.nextDouble();
+		adjo = scan.nextDouble();
 		while(!scan.hasNextDouble()) scan.next();
 		scan.next();
-		this.adjt = scan.nextDouble();
+		adjd = scan.nextDouble();
 		while(!scan.hasNextDouble()) scan.next();
 		scan.next();
-		this.luck = scan.nextDouble();
+		adjt = scan.nextDouble();
+		while(!scan.hasNextDouble()) scan.next();
+		scan.next();
+		luck = scan.nextDouble();
 		System.out.println(this.name + " " + this.adjem + " " + this.adjo + " " + this.adjd + "  " + this.adjt + " " + this.luck);
-		
+		double temp;
+		temp = adjo - adjd;
+		temp/= adjt;
+		if(Math.random() < Math.abs(luck)) temp += luck;
+		num = temp;
 	}
 	
 	public void setOpponent(Team team) { this.opponent = team; }
@@ -54,11 +58,11 @@ public class Team implements Comparable<Team> {
 	
 	public String toString() { return "" + this.name; }
 	
-	public int getNum() { System.out.println(this.num); return this.num; }
+	public double getNum() { System.out.println(this.name + " " + this.num); return this.num; }
 	
 	public int getIndex() { return this.index; }
 
-	public void setIndex(int i) { this.num = i; }
+	public void setIndex(int i) { this.index = i; }
 	
 	public void setWinner(boolean b) { this.winner = b; }
 	
