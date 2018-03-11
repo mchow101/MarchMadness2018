@@ -1,31 +1,49 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class Tournament {
-	private ArrayList<Team> teams = new ArrayList<Team>();
+	//list of teams still in tournament
+	private ArrayList<Team> teams = new ArrayList<Team>(); 
+	//list of results - allows referencing to each round
 	private ArrayList<ArrayList<Team>> results = new ArrayList<ArrayList<Team>>();
 	private Scanner scan;
 	
 	public Tournament(ArrayList<Team> teams) throws FileNotFoundException {
-		scan = new Scanner(new File("TeamSetup.txt"));
-		//sets teams in order they are playing
+		scan = new Scanner(new File("2016TeamSetup.txt"));
 		
+		//preparation to set teams in order they are playing
 		ArrayList<Integer> pos = new ArrayList<Integer>();
 		ArrayList<String> names = new ArrayList<String>();
 		while(scan.hasNextInt()) {
 			pos.add(scan.nextInt());
 			names.add(scan.nextLine());
-			System.out.println(names);
+			System.out.println(pos);
 		}
-		for(int i = 0; i < 64; i++) {
+		
+		//sets teams for tournament
+		//only adds teams if setup txt document tells it to do so
+		for(int i = 0; i < pos.size(); i++) {
+			if(i != 0) if(this.teams.get(i - 1).getIndex() == pos.get(i) + 16*((i)/16)) {
+				if(game(Team.getTeam(teams, names.get(i).substring(1)), this.teams.get(i - 1)).equals(this.teams.get(i - 1))) {
+					pos.remove(i - 1);
+					names.remove(i - 1);
+				} else {
+					pos.remove(i);
+					names.remove(i);
+				}
+				i--;
+				System.out.println(names);
+				continue;
+			}
 			int count = pos.get(i) + 16*((i)/16);
 			this.teams.add(Team.getTeam(teams, names.get(i).substring(1)));
+			this.teams.get(i).setIndex(count);
 			System.out.println(count + " " + this.teams.get(i));
 		}
 		
+		//sets opponents
 		for(int i = 0; i < this.teams.size(); i+=2) {
 			this.teams.get(i).setOpponent(this.teams.get(i + 1));
 			this.teams.get(i + 1).setOpponent(this.teams.get(i));
@@ -36,7 +54,8 @@ public class Tournament {
 				this.teams.get(i).getOpponent().played();
 			}
 		}
-
+		
+		//tournament time!!
 		getStartingTeams();
 		round1();
 		round2();
@@ -47,10 +66,12 @@ public class Tournament {
 		System.out.println(getWinner());
 	}
 	
+	//begin with all teams
 	public void getStartingTeams() {
 		results.add(0, (ArrayList<Team>) teams.clone());
 	}
 	
+	//eliminate teams that have lost
 	public void round1() {
 		System.out.println("Round 1*****");
 		Team.reset(teams);
@@ -71,6 +92,8 @@ public class Tournament {
 		results.add(1, (ArrayList<Team>) teams.clone());
 	}
 	
+	//using round 1 winners, play another round
+	//etc. 
 	public void round2() {
 		System.out.println("Round 2*****");
 		ArrayList<Team> list = new ArrayList<Team>();
@@ -204,6 +227,7 @@ public class Tournament {
 		return teams.get(0);
 	}
 		
+	//compares the two teams to determine a winner
 	public Team game(Team a, Team b) {
 		if(a.getNum() < b.getNum()) {
 			a.setWinner(true);
