@@ -6,17 +6,18 @@ import java.util.Scanner;
 
 //Rank	Team	Conf	W-L	AdjEM	AdjO	AdjD	AdjT	Luck	AdjEM	OppO	OppD	AdjEM
 
-public class Team implements Comparable<Team> {
+public class Team {
 	private String name;
 	private double num; //value determining how good team is
 	private int index; //ArrayList organization
 	private Team opponent; //current opposing Team
 	private boolean winner, played; //whether or not win, played yet in current round
-	private double adjem, adjo, adjd, adjt, luck;
+	private double adjem, adjo, adjd, adjt, luck; //stats
 	private static int line = 0; //keeping track of data input
 	private static Scanner scan;
 	
 	public Team(int index) throws FileNotFoundException {
+		//setup scanner and team information
 		if(line == 0)
 			scan = new Scanner(new File("2016data.txt"));
 		this.index = index + 1;
@@ -28,6 +29,7 @@ public class Team implements Comparable<Team> {
 	}
 	
 	public void setStats() {
+		//read in values
 		scan.nextInt();
 		name = scan.next();
 		scan.next();
@@ -45,6 +47,7 @@ public class Team implements Comparable<Team> {
 		scan.next();
 		luck = scan.nextDouble();
 		System.out.println(this.name + " " + this.adjem + " " + this.adjo + " " + this.adjd + "  " + this.adjt + " " + this.luck);
+		//calculate team's num
 		double temp;
 		temp = adjo - adjd;
 		temp/= adjt;
@@ -52,6 +55,7 @@ public class Team implements Comparable<Team> {
 		num = temp;
 	}
 	
+	//setters and getters
 	public void setOpponent(Team team) { this.opponent = team; }
 	
 	public Team getOpponent() { return this.opponent; }
@@ -68,6 +72,7 @@ public class Team implements Comparable<Team> {
 	
 	public boolean isWinner() { return this.winner; }
 		
+	//prevents team from "playing" multiple times in a round
 	public void played() { this.played = true; }
 	
 	public boolean getPlayed() { return this.played; }
@@ -76,6 +81,7 @@ public class Team implements Comparable<Team> {
 		for(int i = 0; i < teams.size(); i++) teams.get(i).played = false; 
 	}
 	
+	//finds teams given the name
 	public static Team getTeam(ArrayList<Team> team, String s) {
 		int i = 0; 
 		while(i < team.size() && !team.get(i).name.equals(s))
@@ -83,7 +89,5 @@ public class Team implements Comparable<Team> {
 		if(i < team.size())
 			return team.get(i);
 		return team.get(0);
-	}
-	
-	public int compareTo(Team t) { return -(t.index - this.index); }
+	}	
 }
