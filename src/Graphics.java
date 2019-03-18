@@ -13,7 +13,7 @@ public class Graphics extends JPanel implements Runnable {
 	private Thread t;
 	private JFrame frame = new JFrame("March Madness Bracket");
 	//size and placement values
-	private int dim = 800;
+	private int dim = 1000;
 	private int q1x = 25, q1y = (int)(dim*.8)/7, q2x = (int)(dim*1.2) - 25, q2y = (int)(dim*.8)/7;
 	private int q3x = 25, q3y = (int)(dim*.4) + (int)(dim*.8)/42, q4x = (int)(dim*1.2) - 25, q4y = (int)(dim*.4) + (int)(dim*.8)/42;
 	private Tournament tournament;

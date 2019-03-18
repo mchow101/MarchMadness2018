@@ -11,7 +11,7 @@ public class Tournament {
 	private Scanner scan;
 	
 	public Tournament(ArrayList<Team> teams) throws FileNotFoundException {
-		scan = new Scanner(new File("TeamSetup.txt"));
+		scan = new Scanner(new File("2017TeamSetup.txt"));
 		
 		//preparation to set teams in order they are playing
 		ArrayList<Integer> pos = new ArrayList<Integer>();

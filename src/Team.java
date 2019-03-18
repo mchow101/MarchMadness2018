@@ -19,7 +19,7 @@ public class Team {
 	public Team(int index) throws FileNotFoundException {
 		//setup scanner and team information
 		if(line == 0)
-			scan = new Scanner(new File("2016data.txt"));
+			scan = new Scanner(new File("2017data.txt"));
 		this.index = index + 1;
 		this.setStats();
 		this.winner = false;
